@@ -1,46 +1,36 @@
-(() => {
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-if (reduce) document.documentElement.classList.add("reduced-motion");
+import * as THREE from 'three';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/index.js';
+import {ScrollTrigger} from 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/ScrollTrigger.js';
+gsap.registerPlugin(ScrollTrigger);
 
-const loader = document.querySelector("#loader");
-document.body.classList.add("loading");
-let p=0;
-const tick=setInterval(()=>{p=Math.min(100,p+Math.random()*14+4);document.querySelector(".loader-track span").style.width=p+"%";document.querySelector(".loader-percent").textContent=Math.round(p).toString().padStart(2,"0")+"%";if(p>=100){clearInterval(tick);setTimeout(()=>{loader.style.opacity="0";loader.style.pointerEvents="none";document.body.classList.remove("loading");setTimeout(()=>loader.remove(),700)},250)}},80);
-
-const wa = msg => `https://wa.me/27743899657?text=${encodeURIComponent("Hi Zapify Designs, I'd like to enquire about " + msg + ".")}`;
-document.querySelectorAll("[data-wa]").forEach(b=>b.addEventListener("click",()=>window.open(wa(b.dataset.wa),"_blank","noopener")));
-
-const buttons=[...document.querySelectorAll(".builder-options button")], nodes=document.querySelector("#builder-nodes"), title=document.querySelector("#builder-title"), copy=document.querySelector("#builder-copy");
-const labels={website:"WEBSITE",seo:"SEO",social:"SOCIAL",analytics:"ANALYTICS",software:"SOFTWARE",automation:"AUTOMATION",hosting:"HOSTING",maintenance:"MAINTENANCE"};
-const selected=new Set();
-function renderBuilder(){
- nodes.innerHTML="";
- [...selected].forEach((key,i)=>{const n=document.createElement("span");n.className="builder-node";n.textContent=labels[key];const a=(i/Math.max(1,selected.size))*Math.PI*2-.8;n.style.left=(50+Math.cos(a)*36)+"%";n.style.top=(50+Math.sin(a)*36)+"%";nodes.appendChild(n)});
- if(selected.size===0){title.textContent="SELECT COMPONENTS";copy.textContent="Your system will assemble here.";return}
- const has=(a)=>selected.has(a);
- let t="DIGITAL PRESENCE", c="A connected online foundation.";
- if(has("website")&&has("software")&&has("automation")){t="DIGITAL SYSTEM";c="Website + software + automation working as one system."}
- else if(has("website")&&has("seo")&&has("social")&&has("analytics")){t="DIGITAL PRESENCE";c="Website + SEO + social + analytics connected around visibility."}
- else if(has("automation")&&has("software")){t="BUSINESS AUTOMATION";c="Software and workflows connected to reduce repetitive work."}
- title.textContent=t;copy.textContent=c;
-}
-buttons.forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.key;if(selected.has(k)){selected.delete(k);b.classList.remove("active")}else{selected.add(k);b.classList.add("active")}renderBuilder()}));
-
-if(!reduce && window.gsap){
- gsap.registerPlugin(ScrollTrigger);
- gsap.utils.toArray(".hero h1 span").forEach((el,i)=>gsap.fromTo(el,{y:100,opacity:0},{y:0,opacity:1,duration:1.1,delay:.15+i*.08,ease:"power4.out"}));
- gsap.to(".core-wrap",{y:-180,rotation:18,scale:1.08,ease:"none",scrollTrigger:{trigger:".hero",start:"top top",end:"bottom top",scrub:1}});
- gsap.to(".hero h1",{x:-80,scale:.92,ease:"none",scrollTrigger:{trigger:".hero",start:"20% top",end:"bottom top",scrub:1}});
- gsap.fromTo(".statement-word",{y:130,opacity:.15},{y:-60,opacity:1,ease:"none",scrollTrigger:{trigger:".statement",start:"top 80%",end:"bottom 20%",scrub:1}});
- gsap.to(".stage-core",{scale:1.35,rotation:180,scrollTrigger:{trigger:".core-story",start:"top bottom",end:"bottom top",scrub:1}});
- gsap.utils.toArray(".stage-node").forEach((el,i)=>gsap.fromTo(el,{scale:.5,opacity:.1},{scale:1,opacity:1,scrollTrigger:{trigger:".core-story",start:"top 60%",end:"center 35%",scrub:1}}));
- gsap.utils.toArray(".service-item").forEach(el=>gsap.fromTo(el,{x:i%2?100:-100,opacity:.1},{x:0,opacity:1,scrollTrigger:{trigger:el,start:"top 85%",end:"top 45%",scrub:1}}));
- gsap.to(".browser-demo",{x:-80,y:100,rotation:2,scrollTrigger:{trigger:".demo-section",start:"top bottom",end:"bottom top",scrub:1}});
- gsap.utils.toArray(".flow-block").forEach(el=>gsap.fromTo(el,{y:100},{y:-50,scrollTrigger:{trigger:".tech-flow",start:"top bottom",end:"bottom top",scrub:1}}));
- gsap.fromTo(".dash-ui",{scale:.9,opacity:.3},{scale:1,opacity:1,scrollTrigger:{trigger:".dashboard",start:"top 75%",end:"top 25%",scrub:1}});
- gsap.utils.toArray(".reveal-lines span,.reveal-lines strong").forEach((el,i)=>gsap.fromTo(el,{x:i%2?-120:120,opacity:.15},{x:0,opacity:1,scrollTrigger:{trigger:".final-reveal",start:"top 75%",end:"center 35%",scrub:1}}));
-}
-const dot=document.querySelector(".cursor-dot"),ring=document.querySelector(".cursor-ring");
-if(dot&&!reduce){let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;addEventListener("pointermove",e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px"});const loop=()=>{rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.left=rx+"px";ring.style.top=ry+"px";requestAnimationFrame(loop)};loop();document.querySelectorAll("a,button").forEach(el=>el.addEventListener("mouseenter",()=>{ring.style.width="48px";ring.style.height="48px"}));document.querySelectorAll("a,button").forEach(el=>el.addEventListener("mouseleave",()=>{ring.style.width="28px";ring.style.height="28px"}))}
-document.querySelectorAll(".magnetic").forEach(el=>el.addEventListener("pointermove",e=>{const r=el.getBoundingClientRect();el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.15}px,${(e.clientY-r.top-r.height/2)*.15}px)`}));document.querySelectorAll(".magnetic").forEach(el=>el.addEventListener("pointerleave",()=>el.style.transform=""));
-})();
+const canvas=document.querySelector('#world');
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x050505,.045);
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,100);
+camera.position.set(0,0,7);
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7)); renderer.setSize(innerWidth,innerHeight); renderer.outputColorSpace=THREE.SRGBColorSpace;
+const composer=new EffectComposer(renderer); composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),1.25,.7,.15); composer.addPass(bloom);
+scene.add(new THREE.AmbientLight(0xffffff,.7));
+const pink=new THREE.PointLight(0xff1f8f,18,20); pink.position.set(2,1,3); scene.add(pink);
+const white=new THREE.PointLight(0xffffff,7,15); white.position.set(-3,2,4); scene.add(white);
+const group=new THREE.Group(); scene.add(group);
+const core=new THREE.Mesh(new THREE.IcosahedronGeometry(1.18,4),new THREE.MeshPhysicalMaterial({color:0x171717,emissive:0xff1f8f,emissiveIntensity:.35,metalness:.65,roughness:.16,clearcoat:1,clearcoatRoughness:.08})); group.add(core);
+const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(1.28,2),new THREE.MeshBasicMaterial({color:0xff1f8f,wireframe:true,transparent:true,opacity:.28})); group.add(wire);
+const ringMat=new THREE.MeshBasicMaterial({color:0xff1f8f,transparent:true,opacity:.5});
+for(let i=0;i<3;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(1.8+i*.55,.008,8,160),ringMat);r.rotation.set(Math.random()*2,Math.random()*2,Math.random()*2);group.add(r)}
+const points=[];for(let i=0;i<500;i++){const p=new THREE.Vector3((Math.random()-.5)*15,(Math.random()-.5)*10,(Math.random()-.5)*10);points.push(p)}
+const geo=new THREE.BufferGeometry().setFromPoints(points);const stars=new THREE.Points(geo,new THREE.PointsMaterial({color:0xffffff,size:.012,transparent:true,opacity:.35}));scene.add(stars);
+let targetX=0,targetY=0;addEventListener('pointermove',e=>{targetX=(e.clientX/innerWidth-.5)*.7;targetY=(e.clientY/innerHeight-.5)*.35});
+function render(){requestAnimationFrame(render);group.rotation.y+=.002;group.rotation.x+=.001;group.rotation.y+= (targetX-group.rotation.y)*.002;camera.position.x+=(targetX-camera.position.x)*.025;camera.position.y+=(-targetY-camera.position.y)*.025;stars.rotation.y+=.00025;composer.render()}render();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight)});
+const coreScene=document.querySelector('.core-scene'); gsap.to(group.rotation,{x:Math.PI*.7,y:Math.PI*2.2,scrollTrigger:{trigger:coreScene,start:'top bottom',end:'bottom top',scrub:1.5}}); gsap.to(camera.position,{z:4.5,scrollTrigger:{trigger:'.statement',start:'top bottom',end:'bottom top',scrub:1.5}}); gsap.to(camera.position,{z:7,scrollTrigger:{trigger:'.core-scene',start:'top top',end:'bottom top',scrub:1.5}});
+const revealTargets=document.querySelectorAll('.statement h2,.core-copy h2,.feature-copy h2,.services-list h2,.builder-copy h2,.package-intro h2,.product-copy h2,.final-copy h2'); revealTargets.forEach(el=>gsap.fromTo(el,{y:100,opacity:0},{y:0,opacity:1,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none reverse'}}));
+const nodes=document.querySelectorAll('.node');const tooltip=document.querySelector('#serviceTooltip');nodes.forEach(n=>n.addEventListener('mouseenter',()=>{nodes.forEach(x=>x.classList.remove('active'));n.classList.add('active');tooltip.textContent=n.dataset.service}));
+const builderButtons=document.querySelectorAll('.builder-options button');const builderNodes=document.querySelector('#builderNodes');const builderTitle=document.querySelector('#builderTitle');const builderText=document.querySelector('#builderText');const selected=new Set();const labels={website:'WEBSITE',seo:'SEO',social:'SOCIAL',analytics:'ANALYTICS',software:'SOFTWARE',automation:'AUTOMATION',hosting:'HOSTING',maintenance:'MAINTENANCE'};function updateBuilder(){builderNodes.innerHTML='';const arr=[...selected];arr.forEach((key,i)=>{const d=document.createElement('div');d.className='builder-node';d.textContent=labels[key];const a=i*(360/Math.max(arr.length,1))*Math.PI/180;d.style.left=`calc(50% + ${Math.cos(a)*34}%)`;d.style.top=`calc(50% + ${Math.sin(a)*34}%)`;builderNodes.appendChild(d)});if(!arr.length){builderTitle.textContent='START WITH ONE.';builderText.textContent='Pick a piece of your digital system.'}else if(arr.length>=4){builderTitle.textContent='DIGITAL SYSTEM.';builderText.textContent='A connected stack built around your business.'}else if(selected.has('website')&&selected.has('seo')){builderTitle.textContent='DIGITAL PRESENCE.';builderText.textContent='A website with discoverability built in.'}else if(selected.has('software')&&selected.has('automation')){builderTitle.textContent='BUSINESS ENGINE.';builderText.textContent='Systems and automation working together.'}else{builderTitle.textContent='YOUR NEXT PIECE.';builderText.textContent=arr.map(k=>labels[k]).join(' · ')}}builderButtons.forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.key;if(selected.has(k)){selected.delete(k);b.classList.remove('active')}else{selected.add(k);b.classList.add('active')}updateBuilder()}));
+const packs={starter:['STARTER','R800','A practical starting point for getting your business online.'],basic:['BASIC','R1,250','A stronger website foundation for a business ready to present itself professionally.'],premium:['PREMIUM','R2,100','A more complete digital presence for businesses ready to do more online.'],professional:['PROFESSIONAL','R3,500','A larger build for businesses that need a more advanced digital presence.']};document.querySelectorAll('.pack').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.pack').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const p=packs[btn.dataset.pack];document.querySelector('#packLabel').textContent=p[0];document.querySelector('#packPrice').textContent=p[1];document.querySelector('#packCopy').textContent=p[2];document.querySelector('#packLink').href=`https://wa.me/27743899657?text=Hi%20Zapify%20Designs%2C%20I%27m%20interested%20in%20the%20${encodeURIComponent(p[0])}%20package%20at%20${encodeURIComponent(p[1])}.`}));
+let pct=0;const loadInt=setInterval(()=>{pct=Math.min(100,pct+Math.random()*18);document.querySelector('#loadPct').textContent=Math.floor(pct)+'%';document.querySelector('.loader-line i').style.width=pct+'%';if(pct>=100){clearInterval(loadInt);document.body.classList.add('loaded')}},90);
